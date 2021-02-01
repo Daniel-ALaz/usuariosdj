@@ -4,9 +4,25 @@ from django.views.generic.edit import FormView
 
 from .form import UserRegisterForm
 
+from .models import User
+
 # Create your views here.
 
 class UserRegisterView(FormView):
     template_name = 'users/register.html'
     form_class = UserRegisterForm
     success_url = '/'
+
+    def form_valid(self, form):
+
+        User.objects.create_user(
+            form.cleaned_data['username'], #con el cleaned data recuperamos el valor de los formularios
+            form.cleaned_data['email'],
+            form.cleaned_data['password1'],
+            nombres=form.cleaned_data['nombres'],
+            apellidos=form.cleaned_data['apellidos'],
+            genero=form.cleaned_data['genero'],
+        )
+
+
+        return super(UserRegisterView, self).form_valid(form)
