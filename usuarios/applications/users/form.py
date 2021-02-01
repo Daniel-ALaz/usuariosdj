@@ -1,6 +1,8 @@
 from django import forms
 from .models import User
 
+from django.contrib.auth import authenticate
+
 class UserRegisterForm(forms.ModelForm):
 
     password1 = forms.CharField(
@@ -47,5 +49,16 @@ class LoginForm(forms.Form):
         widget=forms.PasswordInput(
             attrs={
                 'placeholder': 'Contraseña'
-            })
+            }
+        )
     )
+
+    def clean(self): # validacion de usuario
+        cleaned_data = super(LoginForm, self).clean() #sobreescribimos
+        username = self.cleaned_data['username']
+        password = self.cleaned_data['password']
+
+        if not authenticate(username=username, password=password):
+            raise forms.ValidationError('Los datos de usuario no son correctos')
+
+        return self.cleaned_data
